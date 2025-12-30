@@ -1,15 +1,16 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-export default function ManageDishes() {
+function ManageDishes() {
   const [dishes, setDishes] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Fetch all dishes
   useEffect(() => {
     fetch("http://localhost:5000/dishes")
-      .then(res => res.json())
+      .then(res => {
+        return res.json();
+      })
       .then(data => {
         setDishes(data);
         setLoading(false);
@@ -25,9 +26,18 @@ export default function ManageDishes() {
       fetch(`http://localhost:5000/dishes/${id}`, {
         method: 'DELETE'
       })
-        .then(res => res.json())
+        .then(res => {
+          return res.json();
+        })
         .then(() => {
-          setDishes(dishes.filter(d => d.id !== id));
+          // Remove dish from state
+          const newDishes = [];
+          for (let i = 0; i < dishes.length; i++) {
+            if (dishes[i].id !== id) {
+              newDishes.push(dishes[i]);
+            }
+          }
+          setDishes(newDishes);
           alert('Dish deleted successfully');
         })
         .catch(err => {
@@ -59,52 +69,40 @@ export default function ManageDishes() {
               </tr>
             </thead>
             <tbody>
-              {dishes.map(dish => (
-                <tr key={dish.id}>
-                  <td>{dish.id}</td>
-                  <td>{dish.name}</td>
-                  <td>${dish.price}</td>
-                  <td>{dish.description ? dish.description.substring(0, 50) + '...' : 'No description'}</td>
-                  <td>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                      <Link 
-                        to={`/edit-dish/${dish.id}`}
-                        className="btn btn-small"
-                        style={{
-                          backgroundColor: '#4CAF50',
-                          color: 'white',
-                          textDecoration: 'none',
-                          padding: '0.4rem 0.8rem',
-                          borderRadius: '4px',
-                          fontSize: '0.9rem',
-                          border: 'none',
-                          cursor: 'pointer',
-                          display: 'inline-block',
-                          textAlign: 'center'
-                        }}
-                      >
-                        Edit
-                      </Link>
-                      
-                      <button 
-                        className="btn btn-small" 
-                        onClick={() => deleteDish(dish.id)}
-                        style={{
-                          backgroundColor: '#ff6b6b', 
-                          color: 'white',
-                          border: 'none',
-                          padding: '0.4rem 0.8rem',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontSize: '0.9rem'
-                        }}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {dishes.map(dish => {
+                let shortDesc = dish.description || 'No description';
+                if (shortDesc.length > 50) {
+                  shortDesc = shortDesc.substring(0, 50) + '...';
+                }
+                
+                return (
+                  <tr key={dish.id}>
+                    <td>{dish.id}</td>
+                    <td>{dish.name}</td>
+                    <td>${dish.price}</td>
+                    <td>{shortDesc}</td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <Link 
+                          to={`/edit-dish/${dish.id}`}
+                          className="btn"
+                          style={{backgroundColor: '#4CAF50', padding: '0.4rem 0.8rem'}}
+                        >
+                          Edit
+                        </Link>
+                        
+                        <button 
+                          className="btn" 
+                          onClick={() => deleteDish(dish.id)}
+                          style={{backgroundColor: '#ff6b6b', padding: '0.4rem 0.8rem'}}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -112,3 +110,5 @@ export default function ManageDishes() {
     </section>
   );
 }
+
+export default ManageDishes;

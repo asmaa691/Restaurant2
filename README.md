@@ -1,152 +1,242 @@
--- FLAMES Restaurant - React Web Application
-A modern, responsive restaurant website built with React.js that showcases menu items, allows customers to browse dishes, add items to a cart, and learn about the restaurant. The application features a clean, user-friendly interface with a warm color scheme that reflects the restaurant's branding.
+# 🔥 FLAMES Restaurant - Full Stack Web Application
+
+A complete restaurant management system with customer-facing menu, shopping cart, and a fully functional admin dashboard. Built with React.js frontend, Node.js/Express backend, and MySQL database.
 
 
--- Screenshots of the UI
 
+## 🚀 **New in Phase 2**
+- ✅ **Admin Dashboard** with full restaurant management
+- ✅ **User Authentication** (Login/Register with roles)
+- ✅ **Complete CRUD Operations** (Create, Read, Update, Delete)
+- ✅ **MySQL Database Integration** for persistent data
+- ✅ **Role-Based Access Control** (Admin vs Customer)
+
+## 📸 **Screenshots**
 
 ### Home Page
+![Home](https://github.com/user-attachments/assets/73eb9085-e40b-4ddd-8030-97f1e4db7243)
 
-<img width="1346" height="624" alt="home" src="https://github.com/user-attachments/assets/73eb9085-e40b-4ddd-8030-97f1e4db7243" />
+### Menu with Search
+![Menu](https://github.com/user-attachments/assets/ff00dffa-6e89-4b19-9383-6dd66e47ba7d)
 
-### Menu Page
-<img width="1345" height="617" alt="menu" src="https://github.com/user-attachments/assets/ff00dffa-6e89-4b19-9383-6dd66e47ba7d" />
+### Admin Dashboard
+*Admin panel for managing dishes and orders*
 
+### Login Page
+*User authentication with role-based access*
 
-### Shopping Cart
-<img width="1315" height="666" alt="cart" src="https://github.com/user-attachments/assets/2ee017b7-efc9-4397-a5fa-dcbaec27a77c" />
+### Order Management
+*View and manage customer orders*
 
+## ✨ **Key Features**
 
-### Dish Details
-<img width="1355" height="638" alt="dishDetails1" src="https://github.com/user-attachments/assets/80b3f6e2-c298-404b-9cec-87a24f09602c" />
+### **For Customers:**
+- Browse menu with search functionality
+- Add items to shopping cart
+- View dish details
+- Place orders with customer information
+- Responsive design for all devices
 
+### **For Administrators:**
+- **Dashboard** with restaurant overview
+- **Manage Dishes** (Add, Edit, Delete menu items)
+- **Manage Orders** (View and delete customer orders)
+- **User Management** (Admin/Customer roles)
+- **Secure Authentication** with role-based access
 
-### Mobile
-<img width="506" height="596" alt="mobile png" src="https://github.com/user-attachments/assets/7aef6f9a-e4ba-4beb-9729-cb9e12c24abb" />
+## 🛠️ **Technology Stack**
 
-### About Page
-<img width="1340" height="641" alt="about" src="https://github.com/user-attachments/assets/5fd3a0cb-053a-4bfc-9c43-7cafe3c7c1c2" />
+### **Frontend:**
+- React.js with Hooks
+- React Router DOM for navigation
+- Custom CSS with responsive design
+- Context API for state management (simplified)
 
+### **Backend:**
+- Node.js with Express.js
+- RESTful API architecture
+- MySQL database
+- CORS for cross-origin requests
 
-### Contact Page
-<img width="1348" height="637" alt="contact" src="https://github.com/user-attachments/assets/7dd6c7ed-29b7-43ee-9059-82e303af2b46" />
+### **Database:**
+- MySQL with tables: `dishes`, `orders`, `users`
+- Relationships between customer orders and dishes
+- User authentication with roles
 
+## 📁 **Project Structure**
 
-### Services Page
-<img width="1328" height="630" alt="services" src="https://github.com/user-attachments/assets/4314c62e-4400-49d0-ab74-fd217b6a67dd" />
+FLAMES-Resto/
+├── frontend/ # React Application
+│ ├── public/
+│ │ ├── assets/ # Image files
+│ │ └── index.html
+│ ├── src/
+│ │ ├── components/ # Reusable components
+│ │ ├── pages/ # Page components
+│ │ │ ├── Home.js
+│ │ │ ├── Menu.js
+│ │ │ ├── Admin.js
+│ │ │ ├── Login.js
+│ │ │ ├── Register.js
+│ │ │ ├── ManageDishes.js
+│ │ │ └── ManageOrders.js
+│ │ ├── App.js # Main app with routing
+│ │ └── index.js # Entry point
+│ └── package.json
+│
+├── backend/ # Node.js Server
+│ ├── server.js # Express server with all routes
+│ ├── package.json
+│ └── README.md
+│
+└── database/ # MySQL Database
+└── schema.sql # Database schema
 
+## 🚦 **Installation & Setup**
 
--- Key Features:
+### **Prerequisites:**
+- Node.js (v14 or higher)
+- MySQL Server
+- Git
 
-Interactive menu browsing with high-quality food images
+### **1. Clone the Repository:**
+```bash
+git clone https://github.com/asmaa691/flames-resto-final.git
+cd flames-resto-final
+## 2. Database Setup:
+-- Run these commands in MySQL
+CREATE DATABASE flames_resto;
 
-Dynamic shopping cart with add/remove functionality
+USE flames_resto;
 
-Individual dish detail pages
+-- Dishes table
+CREATE TABLE dishes (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    description TEXT,
+    image VARCHAR(500)
+);
 
-Responsive design for all devices
+-- Orders table
+CREATE TABLE orders (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    customer_name VARCHAR(100) NOT NULL,
+    total DECIMAL(10,2) NOT NULL,
+    phone VARCHAR(20),
+    address TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-Professional restaurant branding and information
+-- Users table
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    role ENUM('admin', 'customer') DEFAULT 'customer',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-This project demonstrates modern React development practices including component-based architecture, state management, client-side routing, and responsive CSS design.
+-- Insert sample admin user
+INSERT INTO users (username, password, email, role) 
+VALUES ('admin', 'admin123', 'admin@flames.com', 'admin');
 
--- Technologies Used
-Frontend: React.js, React Router DOM
+-- Insert sample customer user
+INSERT INTO users (username, password, email, role)
+VALUES ('customer1', 'password123', 'customer@example.com', 'customer');
 
-Styling: Custom CSS with Flexbox/Grid
+## 3. Backend Setup:
+cd backend
+npm install
 
-Build Tool: Create React App
+Configure database connection in server.js if needed:
+const db = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "",  
+  database: "flames_resto"
+});
 
-Version Control: Git & GitHub
+Start backend server:
+node server.js
+# Server runs on http://localhost:5000
 
-Deployment: GitHub Pages
-
- --Installation & Setup
-Prerequisites
-Node.js (v14 or higher)
-
-npm or yarn package manager
-
-Steps to Run Locally
-  1-Clone the repository
-   git clone https://github.com/[asmaa691]/Restaurant.git
-   cd flames-restaurant
-  2-Install dependencies
-   npm install
-  3-Start development server
-   npm start
-  4-Open your browser
-   Navigate to http://localhost:3000 to view the application  
-
-  
--- Available Scripts
+## 4. Frontend Setup:
+cd frontend
+npm install
 npm start
-Runs the app in the development mode.
-Open http://localhost:3000 to view it in your browser.
+# Frontend runs on http://localhost:3000
 
-The page will reload when you make changes.
-You may also see any lint errors in the console.
+ ##Test Accounts
+Admin Access:
+Username: admin
 
-npm test
-Launches the test runner in the interactive watch mode.
-See the section about running tests for more information.
+Password: admin123
 
-npm run build
-Builds the app for production to the build folder.
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Access: Full admin dashboard, manage dishes/orders
+Customer Access:
+Username: customer1
+
+Password: password123
+
+Access: Browse menu, place orders
+
+# CRUD Operations
+Dishes Management:
+CREATE: Add new dishes to menu
+
+READ: Browse all dishes with search
+
+UPDATE: Edit existing dishes
+
+DELETE: Remove dishes from menu
+
+Orders Management:
+CREATE: Customers place new orders
+
+READ: View all orders (admin only)
+
+DELETE: Remove completed orders
+
+Users Management:
+CREATE: Register new users
+
+READ/AUTHENTICATE: Login with credentials
+
+Role-based access control
+
+ # API Endpoints
+Dishes:
+GET /dishes - Get all dishes
+
+GET /dishes/:id - Get single dish
+
+POST /dishes - Add new dish (admin)
+
+PUT /dishes/:id - Update dish (admin)
+
+DELETE /dishes/:id - Delete dish (admin)
+
+Orders:
+GET /orders - Get all orders (admin)
+
+POST /orders - Create new order
+
+DELETE /orders/:id - Delete order (admin)
+
+Authentication:
+POST /api/register - Register new user
+
+POST /api/login - User login
+
+Role-based access in frontend routing
+
+## 📚 Project Evolution
+
+**Phase 1**: Basic React restaurant website  
+→ [View Phase 1](https://github.com/asmaa691/Restaurant.git)  
 
 
-
--- project structure
-
-Restaurant/
-├── public/
-│   └── assets/          # Image files
-│       ├── pizza.jpg
-│       ├── burger.jpg
-│       ├── pasta.jpg
-│       └── salad.jpg
-├── src/
-│   ├── components/      # Reusable components
-│   │   ├── Nav.js      # Navigation bar
-│   │   ├── Footer.js   # Footer component
-│   │   ├── DishCard.js # Dish display card
-│   │   └── Cart.js     # Shopping cart
-│   ├── pages/          # Page components
-│   │   ├── Home.js     # Landing page
-│   │   ├── About.js    # About us
-│   │   ├── Menu.js     # Menu with cart
-│   │   ├── Dish.js     # Dish details
-│   │   ├── Contact.js  # Contact info
-│   │   └── Services.js # Services offered
-│   ├── data/
-│   │   └── dishes.js   # Menu data
-│   ├── App.js          # Main app component
-│   ├── index.js        # App entry point
-│   └── index.css       # Global styles
-└── package.json        # Dependencies
- 
---Usage
- --Browse Menu
-Visit the Menu page to see all available dishes
-
-Click "View Details" for more information about any dish
-
-Use "Add to Cart" to add items to your order
-
- --Manage Cart
-View your cart at the bottom of the Menu page
-
-See itemized list with prices
-
-Remove unwanted items with the "Remove" button
-
-Monitor your total cost in real-time
-
- --Learn More
-Check the About page for restaurant information
-
-Visit Contact page for location and contact details
-
-Explore Services page for feature overview
-
+**Phase 2**: Full-stack with admin dashboard & database  
+→ [viewPhase 2](https://asmaa691.github.io/flames-resto-phase2)

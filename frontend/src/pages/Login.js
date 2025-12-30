@@ -1,55 +1,52 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
-export default function Login() {
+function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
 
-  const handleLogin = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
-    try {
-      const response = await fetch("http://localhost:5000/api/login", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password })
+    fetch("http://localhost:5000/api/login", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password })
+    })
+      .then(res => {
+        return res.json();
+      })
+      .then(data => {
+        if (data.error) {
+          setError(data.error);
+        } else {
+          localStorage.setItem('user', JSON.stringify(data.user));
+          alert('Login successful!');
+          if (data.user.role === 'admin') {
+            navigate('/admin');
+          } else {
+            navigate('/');
+          }
+        }
+        setLoading(false);
+      })
+      .catch(err => {
+        setError('Login failed. Please try again.');
+        setLoading(false);
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Login failed');
-      }
-
-      // Save user and login
-      login(data.user);
-      
-      // Show welcome message
-      alert(`Welcome back, ${data.user.username}!`);
-      
-      // ALWAYS redirect to home page (no auto-redirect to admin)
-      navigate('/');
-
-    } catch (err) {
-      setError(err.message || 'Login failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
     <section className="container pad">
       <div className="form-container" style={{ maxWidth: '400px', margin: '0 auto' }}>
-        <h2 className="red text-center">Login to FLAMES</h2>
+        <h2 className="red text-center">Login</h2>
         
         {error && (
           <div className="red" style={{ 
@@ -64,11 +61,11 @@ export default function Login() {
         
         <form onSubmit={handleLogin}>
           <div className="form-group">
-            <label>Username</label>
+            <label>Username *</label>
             <input 
               type="text" 
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={e => setUsername(e.target.value)}
               className="form-input"
               placeholder="Enter your username"
               required
@@ -77,11 +74,11 @@ export default function Login() {
           </div>
 
           <div className="form-group">
-            <label>Password</label>
+            <label>Password *</label>
             <input 
               type="password" 
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               className="form-input"
               placeholder="Enter your password"
               required
@@ -99,20 +96,35 @@ export default function Login() {
           </button>
         </form>
 
-        <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
-          <p className="brown">
-            Don't have an account?{' '}
-            <Link to="/register" className="red" style={{ fontWeight: 'bold' }}>
-              Register here
-            </Link>
+        {/* TEST ACCOUNTS SECTION - UPDATED TEXT */}
+        <div style={{
+          marginTop: '1.5rem',
+          padding: '1rem',
+          backgroundColor: '#f5f5f5',
+          borderRadius: '5px',
+          border: '1px solid #ddd'
+        }}>
+          <p style={{
+            marginTop: '0',
+            marginBottom: '0.5rem',
+            fontWeight: 'bold',
+            color: '#333',
+            fontSize: '14px',
+            textAlign: 'center'
+          }}>
+            Use These Test Accounts:
           </p>
-          <p className="brown" style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>
-            <strong>Test Accounts:</strong><br />
-            Admin: admin / admin123<br />
-            Customer: customer1 / password123
+          <p style={{margin: '0.25rem 0', fontSize: '14px', color: '#666', textAlign: 'center'}}>
+            <strong>Admin:</strong> admin / admin123
           </p>
+          <p style={{margin: '0.25rem 0', fontSize: '14px', color: '#666', textAlign: 'center'}}>
+            <strong>Customer:</strong> customer1 / password123
+          </p>
+          
         </div>
       </div>
     </section>
   );
 }
+
+export default Login;

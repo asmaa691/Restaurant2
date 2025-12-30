@@ -1,14 +1,21 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 
-export default function Nav() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+function Nav() {
+  // Simple check for logged in user
+  const userString = localStorage.getItem('user');
+  let user = null;
+  if (userString) {
+    try {
+      user = JSON.parse(userString);
+    } catch(e) {
+      console.log('Error reading user');
+    }
+  }
 
   const handleLogout = () => {
-    logout();
-    navigate('/');
+    localStorage.removeItem('user');
+    window.location.href = '/';
   };
 
   return (
@@ -22,44 +29,25 @@ export default function Nav() {
           <li><Link to="/services">Services</Link></li>
           <li><Link to="/contact">Contact</Link></li>
           
-          {/* Show Admin link only for admin users */}
           {user && user.role === 'admin' && (
             <li><Link to="/admin" className="admin-link">Admin</Link></li>
           )}
         </ul>
         
-        {/* User/Auth section */}
         <div className="flex center-items gap" style={{ marginLeft: '1rem' }}>
           {user ? (
             <>
               <span className="user-greeting">
-                Hello, {user.username} ({user.role})
+                Hello, {user.username}
               </span>
-              <button 
-                onClick={handleLogout}
-                className="btn btn-small"
-                style={{ 
-                  backgroundColor: '#8c1f12',
-                  padding: '0.3rem 0.8rem'
-                }}
-              >
+              <button onClick={handleLogout} className="btn btn-small">
                 Logout
               </button>
             </>
           ) : (
             <>
-              <Link to="/login" className="btn btn-small" style={{ 
-                backgroundColor: '#ff7043',
-                padding: '0.3rem 0.8rem'
-              }}>
-                Login
-              </Link>
-              <Link to="/register" className="btn btn-small" style={{ 
-                backgroundColor: '#666',
-                padding: '0.3rem 0.8rem'
-              }}>
-                Register
-              </Link>
+              <Link to="/login" className="btn btn-small">Login</Link>
+              {/* REGISTER BUTTON REMOVED */}
             </>
           )}
         </div>
@@ -67,3 +55,5 @@ export default function Nav() {
     </nav>
   );
 }
+
+export default Nav;

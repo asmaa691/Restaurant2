@@ -1,27 +1,30 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-export default function Checkout() {
+function Checkout() {
   const [customerName, setCustomerName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
   
-  // Get cart items and total from location state or localStorage
-  const cartItems = location.state?.cartItems || JSON.parse(localStorage.getItem('cart')) || [];
-  const total = cartItems.reduce((sum, item) => sum + item.price, 0);
+  // Get cart from localStorage
+  const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+  
+  // Calculate total with simple loop
+  let total = 0;
+  for (let i = 0; i < cartItems.length; i++) {
+    total = total + cartItems[i].price;
+  }
 
   const placeOrder = () => {
-    // Validation
-    if (!customerName.trim()) {
+    if (customerName.trim() === '') {
       setMessage('Please enter your name');
       return;
     }
 
-    if (!phone.trim()) {
+    if (phone.trim() === '') {
       setMessage('Please enter your phone number');
       return;
     }
@@ -47,26 +50,22 @@ export default function Checkout() {
       })
     })
       .then(res => {
-        if (!res.ok) {
-          throw new Error('Network response was not ok');
-        }
         return res.json();
       })
       .then(data => {
-        console.log('Order response:', data);
-        setMessage('✅ Order placed successfully! Thank you!');
+        setMessage('Order placed successfully! Thank you!');
         
-        // Clear cart from localStorage
+        // Clear cart
         localStorage.removeItem('cart');
         
-        // Redirect to home after 3 seconds
-        setTimeout(() => navigate('/'), 3000);
+        // Redirect after 3 seconds
+        setTimeout(() => {
+          navigate('/');
+        }, 3000);
       })
       .catch(err => {
-        console.error('Order error:', err);
-        setMessage('❌ Error placing order. Please try again.');
-      })
-      .finally(() => {
+        console.log(err);
+        setMessage('Error placing order. Please try again.');
         setLoading(false);
       });
   };
@@ -83,9 +82,7 @@ export default function Checkout() {
           border: '1px solid #b33a2f',
           textAlign: 'center'
         }}>
-          <p className="brown" style={{ fontSize: '1.2rem' }}>
-            Your cart is empty.
-          </p>
+          <p className="brown">Your cart is empty.</p>
           <button 
             onClick={() => navigate('/menu')} 
             className="btn"
@@ -112,29 +109,26 @@ export default function Checkout() {
       }}>
         <h3 className="brown">Order Summary</h3>
         
-        {cartItems.map((item, index) => (
-          <div key={index} style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '0.75rem 0',
-            borderBottom: '1px solid #e6c9b2'
-          }}>
-            <div>
+        {cartItems.map((item, index) => {
+          return (
+            <div key={index} style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '0.75rem 0',
+              borderBottom: '1px solid #e6c9b2'
+            }}>
+              <div>
+                <span className="brown" style={{ fontWeight: 'bold' }}>
+                  {item.name}
+                </span>
+              </div>
               <span className="brown" style={{ fontWeight: 'bold' }}>
-                {item.name}
+                ${item.price}
               </span>
-              {item.description && (
-                <p className="brown" style={{ fontSize: '0.9rem', margin: '0.25rem 0' }}>
-                  {item.description.substring(0, 50)}...
-                </p>
-              )}
             </div>
-            <span className="brown" style={{ fontWeight: 'bold' }}>
-              ${item.price}
-            </span>
-          </div>
-        ))}
+          );
+        })}
         
         <div style={{
           display: 'flex',
@@ -159,11 +153,10 @@ export default function Checkout() {
         <h3 className="brown">Customer Information</h3>
         
         {message && (
-          <div className={message.includes('✅') ? 'green' : 'red'} style={{
+          <div className={message.includes('success') ? 'green' : 'red'} style={{
             padding: '0.75rem',
             borderRadius: '5px',
-            marginBottom: '1rem',
-            backgroundColor: message.includes('✅') ? '#e8f5e9' : '#ffebee'
+            marginBottom: '1rem'
           }}>
             {message}
           </div>
@@ -205,9 +198,6 @@ export default function Checkout() {
             placeholder="Street address, city (if delivery)"
             disabled={loading}
           />
-          <small className="brown" style={{ display: 'block', marginTop: '0.25rem' }}>
-            For takeaway orders, you can leave this empty
-          </small>
         </div>
 
         <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
@@ -224,24 +214,15 @@ export default function Checkout() {
             type="button" 
             className="btn"
             onClick={() => navigate('/menu')}
-            style={{
-              backgroundColor: '#666',
-              flex: 0.5
-            }}
+            style={{backgroundColor: '#666', flex: 0.5}}
             disabled={loading}
           >
             Back to Menu
           </button>
         </div>
-        
-        <p className="brown" style={{ 
-          marginTop: '1rem', 
-          fontSize: '0.9rem',
-          fontStyle: 'italic'
-        }}>
-          * Required fields
-        </p>
       </div>
     </section>
   );
 }
+
+export default Checkout;

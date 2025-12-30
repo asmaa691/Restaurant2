@@ -2,182 +2,142 @@ import React, { useState, useEffect } from 'react';
 import DishCard from '../components/DishCard';
 import Cart from '../components/Cart';
 
-export default function Menu() {
+function Menu() {
   const [dishes, setDishes] = useState([]);
-  const [filteredDishes, setFilteredDishes] = useState([]);
-  const [cartItems, setCartItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  
-  // Search and filter states
-  const [searchTerm, setSearchTerm] = useState('');
-  const [minPrice, setMinPrice] = useState('');
-  const [maxPrice, setMaxPrice] = useState('');
-  
-  // Fetch dishes from API
+  const [cart, setCart] = useState([]);
+  const [search, setSearch] = useState('');
+
   useEffect(() => {
     fetch("http://localhost:5000/dishes")
       .then(res => res.json())
-      .then(data => {
-        setDishes(data);
-        setFilteredDishes(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.log(err);
-        setError('Failed to load dishes');
-        setLoading(false);
-      });
+      .then(data => setDishes(data))
+      .catch(err => console.log(err));
   }, []);
 
-  // Apply filters
-  useEffect(() => {
-    let result = dishes;
-    
-    if (searchTerm) {
-      result = result.filter(dish =>
-        dish.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (dish.description && dish.description.toLowerCase().includes(searchTerm.toLowerCase()))
-      );
-    }
-    
-    if (minPrice) {
-      result = result.filter(dish => dish.price >= parseFloat(minPrice));
-    }
-    
-    if (maxPrice) {
-      result = result.filter(dish => dish.price <= parseFloat(maxPrice));
-    }
-    
-    setFilteredDishes(result);
-  }, [searchTerm, minPrice, maxPrice, dishes]);
-
   const addToCart = (dish) => {
-    setCartItems([...cartItems, dish]);
+    setCart([...cart, dish]);
   };
 
   const removeFromCart = (index) => {
-    const newCart = [...cartItems];
+    const newCart = [...cart];
     newCart.splice(index, 1);
-    setCartItems(newCart);
+    setCart(newCart);
   };
 
-  const clearFilters = () => {
-    setSearchTerm('');
-    setMinPrice('');
-    setMaxPrice('');
-  };
-
-  if (loading) return <p className="container pad">Loading menu...</p>;
-  if (error) return <p className="container pad red">{error}</p>;
+  const filteredDishes = dishes.filter(dish => 
+    dish.name.toLowerCase().includes(search.toLowerCase()) ||
+    dish.description.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <section className="container">
-      <h2 className="red">Menu</h2>
+    <div className="container">
+      <h2 className="red" style={{textAlign: 'center', fontSize: '2.5rem', marginBottom: '30px'}}>
+        Our Menu
+      </h2>
       
-      {/* Search and Filter Section - SIMPLIFIED */}
-      <div className="filter-section" style={{
-        backgroundColor: '#fff3e6',
-        padding: '1.5rem',
-        borderRadius: '8px',
-        marginBottom: '2rem',
-        border: '1px solid #b33a2f'
+      {/* Improved Search Bar */}
+      <div style={{
+        marginBottom: '40px',
+        maxWidth: '600px',
+        marginLeft: 'auto',
+        marginRight: 'auto'
       }}>
-        <div className="filter-grid" style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '1rem',
-          marginBottom: '1rem'
+        <div style={{
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'center'
         }}>
-          {/* Search */}
-          <div className="filter-group">
-            <input
-              type="text"
-              placeholder="Search dishes..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="form-input"
-              style={{ width: '100%' }}
-            />
+          <div style={{
+            position: 'absolute',
+            left: '15px',
+            color: '#b33a2f',
+            fontSize: '18px'
+          }}>
+            🔍
           </div>
-          
-          {/* Price Range */}
-          <div className="filter-group">
-            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-              <input
-                type="number"
-                placeholder="Min price"
-                value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value)}
-                className="form-input"
-                min="0"
-                step="0.01"
-                style={{ flex: 1 }}
-              />
-              <span style={{ color: '#5a3a2b' }}>to</span>
-              <input
-                type="number"
-                placeholder="Max price"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value)}
-                className="form-input"
-                min="0"
-                step="0.01"
-                style={{ flex: 1 }}
-              />
-            </div>
-          </div>
-          
-          {/* Clear Button */}
-          <div className="filter-group" style={{ display: 'flex', alignItems: 'flex-end' }}>
-            <button
-              onClick={clearFilters}
-              className="btn"
-              style={{ 
-                backgroundColor: '#666',
-                width: '100%',
-                height: '42px' // Match input height
-              }}
-            >
-              Clear
-            </button>
-          </div>
+          <input
+            type="text"
+            placeholder="Search for dishes by name or description..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '15px 15px 15px 45px',
+              fontSize: '16px',
+              border: '2px solid #e6c9b2',
+              borderRadius: '50px',
+              backgroundColor: '#fff8f0',
+              boxShadow: '0 3px 10px rgba(179, 58, 47, 0.1)',
+              transition: 'all 0.3s ease'
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = '#b33a2f';
+              e.target.style.boxShadow = '0 3px 15px rgba(179, 58, 47, 0.2)';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = '#e6c9b2';
+              e.target.style.boxShadow = '0 3px 10px rgba(179, 58, 47, 0.1)';
+            }}
+          />
+        </div>
+        
+        {/* Search results counter */}
+        <div style={{
+          textAlign: 'center',
+          marginTop: '10px',
+          color: '#5a3a2b',
+          fontSize: '14px'
+        }}>
+          {search && (
+            <span>
+              Found {filteredDishes.length} dish{filteredDishes.length !== 1 ? 'es' : ''} matching "{search}"
+            </span>
+          )}
         </div>
       </div>
 
-      {/* Dishes Grid */}
-      {filteredDishes.length === 0 ? (
-        <div className="no-results" style={{
-          textAlign: 'center',
-          padding: '2rem',
-          backgroundColor: '#fff3e6',
-          borderRadius: '8px',
-          border: '1px dashed #b33a2f'
-        }}>
-          <h3 className="red">No dishes found</h3>
-          <p className="brown">Try adjusting your search or filters</p>
-          <button
-            onClick={clearFilters}
-            className="btn"
-            style={{ marginTop: '1rem' }}
-          >
-            Show All Dishes
-          </button>
-        </div>
-      ) : (
-        <div className="grid">
-          {filteredDishes.map(d => (
+      {/* Menu Items Grid */}
+      <div className="grid">
+        {filteredDishes.length === 0 ? (
+          <div style={{
+            textAlign: 'center',
+            padding: '40px',
+            gridColumn: '1/-1'
+          }}>
+            <p style={{fontSize: '18px', color: '#5a3a2b'}}>
+              {search ? 'No dishes found matching your search.' : 'Loading dishes...'}
+            </p>
+            {search && (
+              <button 
+                onClick={() => setSearch('')}
+                style={{
+                  marginTop: '15px',
+                  background: '#b33a2f',
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px 20px',
+                  borderRadius: '5px',
+                  cursor: 'pointer'
+                }}
+              >
+                Clear Search
+              </button>
+            )}
+          </div>
+        ) : (
+          filteredDishes.map(dish => (
             <DishCard
-              key={d.id}
-              dish={d}
-              addToCart={() => addToCart(d)}
+              key={dish.id}
+              dish={dish}
+              addToCart={() => addToCart(dish)}
             />
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
 
-      <Cart cartItems={cartItems} removeFromCart={removeFromCart} />
-    </section>
+      <Cart cartItems={cart} removeFromCart={removeFromCart} />
+    </div>
   );
 }
 
+export default Menu;

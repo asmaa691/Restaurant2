@@ -1,17 +1,16 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
 
-export default function Dish() {
+function Dish() {
   const { id } = useParams();
   const [dish, setDish] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/dishes/${id}`)
-      .then(res => {
-        setDish(res.data);
+    fetch(`http://localhost:5000/dishes/${id}`)
+      .then(res => res.json())
+      .then(data => {
+        setDish(data);
         setLoading(false);
       })
       .catch(err => {
@@ -28,7 +27,7 @@ export default function Dish() {
       <h2 className="text-2xl bold mb">{dish.name}</h2>
 
       <img 
-        src={dish.image} 
+        src={dish.image || "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=400&fit=crop"} 
         alt={dish.name} 
         className="card-img"
       />
@@ -38,3 +37,5 @@ export default function Dish() {
     </section>
   );
 }
+
+export default Dish;
