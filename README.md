@@ -236,7 +236,8 @@ Role-based access in frontend routing
 
 **Phase 1**: Basic React restaurant website  
 → [View Phase 1](https://github.com/asmaa691/Restaurant.git)  
-
+hosting link:
+ https://asmaa691.github.io/Restaurant
 
 **Phase 2**: Full-stack with admin dashboard & database  
 → [viewPhase 2](https://asmaa691.github.io/flames-resto-phase2)
