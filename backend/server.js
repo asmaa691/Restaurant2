@@ -3,6 +3,9 @@ const mysql = require("mysql2");
 const cors = require("cors");
 
 const app = express();
+app.get("/", (req, res) => {
+  res.send("Restaurant API is running 🚀");
+});
 
 /* ===== MIDDLEWARE ===== */
 app.use(cors({
